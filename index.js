@@ -115,7 +115,7 @@ export default class Query {
    */
   async execute() {
     // execute the sql in the main process
-    this.results = await Bridge.ask('sql', this.sql)
+    this.results = await Bridge.askIpc('sql', this.sql)
 
     this.afterExecute()
 
@@ -426,7 +426,7 @@ export default class Query {
     countSql = countSql.replace(`OFFSET\n\t${this._calculateOffset()}`, '')
     
     // execute the sql in the main process
-    let countResults = await Bridge.ask('sql', countSql)
+    let countResults = await Bridge.askIpc('sql', countSql)
     
     this.totalResults = countResults[0].numItems
     this.pages = Math.ceil(Number(countResults[0].numItems) / Number(this.queryObj.itemsPerPage))
