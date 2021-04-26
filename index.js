@@ -1,11 +1,10 @@
-
 export default class Query {
   /**
    * @param {object} givenQueryObj - Supply a query object to init the Query
    * with. Supports the following properties:
    * - `table`: **Required parameter.** The table name.
    *
-   * - `prefix`: Table name prefix. Defaults to `ec_`. All table names in all
+   * - `prefix`: Table name prefix. Defaults to `music_`. All table names in all
    *   parts of the query do not require the prefix if it's set here.
    *
    * - `columns`: An object of column:value pairs that must exactly match the
@@ -47,6 +46,9 @@ export default class Query {
       // required query parameters
       if (typeof givenQueryObj !== 'object') throw new Error('Query requires a query object')
       if (!('table' in givenQueryObj)) throw new Error('Query queryObj requires a table key')
+      
+      this.serverEndpoint = '/query'
+      this.serverMethod = 'POST'
   
       // the default state of the queryObj
       let queryObj = {
@@ -54,7 +56,7 @@ export default class Query {
         'itemsPerPage': 100,
         'columnCompare': 'AND',
         'equalityOperator': '=',
-        'prefix': 'ec_'
+        'prefix': 'server_'
       }
   
       // merge the default queryObj with the given queryObj, possibly
@@ -115,7 +117,8 @@ export default class Query {
    */
   async execute() {
     // execute the sql in the main process
-    this.results = await Bridge.ipcAsk('sql', this.sql)
+    let serverResponse = await Bridge.httpApi(this.serverEndpoint, this.serverMethod, this.sql)
+    this.results = serverResponse.response
 
     this.afterExecute()
 
@@ -348,8 +351,7 @@ export default class Query {
    * @returns {Number)}
    */
   _buildOffsetClause() {
-    // omit the offset clause if showing all results or we are showing the first
-    // page
+    // omit the offset clause if showing all results or the first page
     if (this.queryObj.itemsPerPage === -1 || this.queryObj.page === 1) {
       return ''
     }
@@ -415,10 +417,10 @@ export default class Query {
       return this
     }
 
-    // we will copy and modify the existing sql query
+    // copy the existing sql query
     let countSql = this.sql
     
-    // replace the SELECT * clause with a SELECT COUNT(*) clause
+    // replace the "SELECT *" clause with a "SELECT COUNT(*)" clause
     countSql = countSql.replace(/[^*]*/, '') // erase everything up to the first asterisk
     countSql = countSql.replace('*', 'SELECT COUNT(*) AS numItems')
     
@@ -426,7 +428,8 @@ export default class Query {
     countSql = countSql.replace(`OFFSET\n\t${this._calculateOffset()}`, '')
     
     // execute the sql in the main process
-    let countResults = await Bridge.ipcAsk('sql', countSql)
+    let serverResponse = await Bridge.httpApi(this.serverEndpoint, this.serverMethod, countSql)
+    let countResults = serverResponse.response
     
     this.totalResults = countResults[0].numItems
     this.pages = Math.ceil(Number(countResults[0].numItems) / Number(this.queryObj.itemsPerPage))
