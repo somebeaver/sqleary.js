@@ -40,6 +40,8 @@ export default class Query {
    *    - `equalityOperator`: Equality operator when joining tables. Defaults to `=`
    *    - `type`: Either `LEFT JOIN`, `INNER JOIN`, or `CROSS JOIN`. Defaults to
    *    `LEFT JOIN`.
+   * 
+   * - `mode`: Either `http` or `ipc`. Defaults to http. For Hydra use only.
    */
   constructor(givenQueryObj) {
     return (async () => {
@@ -47,6 +49,7 @@ export default class Query {
       if (typeof givenQueryObj !== 'object') throw new Error('Query requires a query object')
       if (!('table' in givenQueryObj)) throw new Error('Query queryObj requires a table key')
       
+      this.mode = ('mode' in givenQueryObj) ? givenQueryObj.mode : 'http'
       this.serverEndpoint = '/query'
       this.serverMethod = 'POST'
   
@@ -116,13 +119,28 @@ export default class Query {
    * @returns {Query} Returns the Query instance.
    */
   async execute() {
-    // execute the sql in the main process
-    let serverResponse = await Bridge.httpApi(this.serverEndpoint, this.serverMethod, this.sql)
-    this.results = serverResponse.response
+    this.results = await this._send(this.sql)
 
     this.afterExecute()
 
     return this
+  }
+
+  /**
+   * Sends the SQL to the execution destination. For internal use only.
+   * 
+   * @param {string} sql
+   */
+  async _send(sql) {
+    // http = send to hydra web server
+    if (this.mode === 'http') {
+      let serverRequest = await Bridge.httpApi(this.serverEndpoint, this.serverMethod, sql)
+      return serverRequest.response
+    }
+    // ipc = send to electron main process
+    else if (this.mode === 'ipc') {
+      return await Bridge.ipcAsk('sql', sql)
+    }
   }
 
   /**
@@ -428,8 +446,7 @@ export default class Query {
     countSql = countSql.replace(`OFFSET\n\t${this._calculateOffset()}`, '')
     
     // execute the sql in the main process
-    let serverResponse = await Bridge.httpApi(this.serverEndpoint, this.serverMethod, countSql)
-    let countResults = serverResponse.response
+    let countResults = await this._send(countSql)
     
     this.totalResults = countResults[0].numItems
     this.pages = Math.ceil(Number(countResults[0].numItems) / Number(this.queryObj.itemsPerPage))
