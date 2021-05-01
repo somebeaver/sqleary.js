@@ -1,4 +1,4 @@
-# Query.js - Dependency free vanilla JavaScript SQL query builder
+# Query.js
 
 *To see Query.js in action, check out the
 [Cardinal apps](https://cardinalapps.xyz).* 
