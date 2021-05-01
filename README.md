@@ -1,7 +1,7 @@
-# Query.js
+# slurry.js
 
-*To see Query.js in action, check out the
-[Cardinal apps](https://cardinalapps.xyz).* 
+*To see slurry.js in action, check out the
+[Cardinal apps](https://cardinalapps.xyz).*
 
 Build powerful SQL queries in vanilla JS with this dependency free WordPress
 inspired query builder library.
@@ -11,6 +11,8 @@ All `Query` instances have an asynchronous constructor, and must be `await`'ed.
 See the [constructor options](#constructor-options).
 
 ```javascript
+import Query from 'slurry.js'
+
 async function getRows() {
   return await new Query({
     'table': 'tracks'
@@ -73,7 +75,7 @@ implementation of the `WP_Query` constructor object.
 
 - **`mode`**: For [Cardinal](https://cardinalapps.xyz) purposes. Either `http`
   or `ipc`. Defaults to `http`. See [Setting the
-  Endpoint](#setting-the-endpoint)`.
+  Endpoint](#setting-the-endpoint).
   
 ## Properties
 
