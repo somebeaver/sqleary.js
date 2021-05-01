@@ -7,8 +7,8 @@ Build powerful SQL queries in vanilla JS with this dependency free WordPress
 inspired query builder library.
 
 ## Initializing a new Query
-All `Query` instances have an asynchronous constructor, and must be `await`ed.
-See the [#constructor-options](constructor options).
+All `Query` instances have an asynchronous constructor, and must be `await`'ed.
+See the [constructor options](#constructor-options).
 
 ```javascript
 async function getRows() {
