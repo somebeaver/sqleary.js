@@ -32,12 +32,12 @@ implementation of the `WP_Query` constructor object.
 - **`table`**: **Required.** The table name, without the prefix.
 
 - **`prefix`**: If the database uses a table name prefix, it can be set here.
-  Defaults to `server_` for [Cardinal](https://cardinalapps.xyz) purposes. All
-  table names in all parts of the query do not require the prefix if it's set
-  here.
+  All table names in all parts of the query do not require the prefix if it's
+  set here. Defaults to `server_` for [Cardinal](https://cardinalapps.xyz)
+  purposes.
 
 - **`itemsPerPage`**: Defaults to 100. Set to -1 for no limit per page, which
-  will put all results on page 1.
+  puts all results on page 1.
 
 - **`columns`**: An object of `column: value` pairs that must exactly match the
   database contents. Values can be a string, number, or array. Or, an array
