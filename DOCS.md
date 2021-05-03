@@ -16,7 +16,7 @@
 <a name="new_module_Query--module.exports_new"></a>
 
 #### new module.exports()
-See the README for the docs on this.
+Constructor.
 
 
 | Param | Type | Description |

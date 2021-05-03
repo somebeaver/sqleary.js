@@ -3,7 +3,7 @@
  */
 export default class Query {
   /**
-   * See the README for the docs on this.
+   * Constructor.
    *
    * @param {string} givenQueryObj.table - The table name, without the prefix.
    *
