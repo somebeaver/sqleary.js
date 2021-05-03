@@ -1,10 +1,15 @@
-# slurry.js
+# sqleary.js
 
-*To see slurry.js in action, check out the
+*To see sqleary.js in action, check out the
 [Cardinal apps](https://cardinalapps.xyz).*
 
 Build powerful SQL queries in vanilla JS with this dependency free WordPress
 inspired query builder library.
+
+## API Reference
+
+A reference of all public sqleary.js methods is available in
+**[DOCS.md](DOCS.md)**.
 
 ## Initializing a new Query
 All `Query` instances have an asynchronous constructor, and must be `await`'ed.
@@ -26,57 +31,6 @@ The `queryObj` is the object of parameters that is supplied to the constructor.
 After initialization, the `queryObj` is saved internally, and as the `Query`
 instance is used, the `queryObj` is kept up to date with the changes.
 
-The `queryObj` is inspired by WordPress, but it is certainly not a full
-implementation of the `WP_Query` constructor object.
-
-### Constructor Options
-
-- **`table`**: **Required.** The table name, without the prefix.
-
-- **`prefix`**: If the database uses a table name prefix, it can be set here.
-  All table names in all parts of the query do not require the prefix if it's
-  set here. Defaults to `server_` for [Cardinal](https://cardinalapps.xyz)
-  purposes.
-
-- **`itemsPerPage`**: Defaults to 100. Set to -1 for no limit per page, which
-  puts all results on page 1.
-
-- **`columns`**: An object of `column: value` pairs that must exactly match the
-  database contents. Values can be a string, number, or array. Or, an array
-  of such objects. When performing a join, you can set the table name in
-  the column name like `artists.id` to handle column name collisions. You
-  may provide an "equalityOperator" key on a per-column-object basis so
-  that queries of multiple compares can be combined (ie. get all artists
-  except *these*).
-   
-- **`columnCompare`**: Operator used when querying for multiple columns. Either
-  `AND` or `OR`. Defaults to `AND`.
-
-- **`equalityOperator`**: Operator used when checking the value of the column.
-  Can be `=`, `LIKE`, `IN`, or `NOT IN`. Defaults to `=`. When using `LIKE`,
-  you must put `%` signs around your string.
-
-- **`orderBy`**: Optionally order the results. Use an array of single entry
-  objects of `column: order` key-value pairs. Orders are `ASC` and `DESC`.
-  When omitted, the results are returned in the order that they exist in
-  the database. This can also be set to the `rand` for random order.
-
-- **`page`**: Initial page to load. Defaults to page 1. Use `goToPage()` to
-  switch pages afterwards.
-
-- **`join`**: An object that performs a table join, or an array of such
-  objects. The object(s) support the following keys: 
-   - **`table`**: The table name to join. 
-   - **`on`**: An object of `PrimaryTableColumn:ForeignTableColumn` keys and
-   values that produce the ON statement.
-   - **`equalityOperator`**: Equality operator when joining tables. Defaults to `=`
-   - **`type`**: Either `LEFT JOIN`, `INNER JOIN`, or `CROSS JOIN`. Defaults to
-   `LEFT JOIN`.
-
-- **`mode`**: For [Cardinal](https://cardinalapps.xyz) purposes. Either `http`
-  or `ipc`. Defaults to `http`. See [Setting the
-  Endpoint](#setting-the-endpoint).
-  
 ## Properties
 
 After the Query is initialized, it will have these public properties.
@@ -225,3 +179,7 @@ class MyQuery extends Query {
 Your implementation should send the SQL to a destination for execution. All
 queries should be executed with the SQL driver's `all` (or equilivent) function.
 Empty results should net an empty array.
+
+## License
+
+Licensed under the Mozilla Public License 2.0.

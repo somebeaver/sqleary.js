@@ -1,6 +1,65 @@
+/**
+ * @module Query
+ */
 export default class Query {
   /**
    * See the README for the docs on this.
+   *
+   * @param {string} givenQueryObj.table - The table name, without the prefix.
+   *
+   * @param {string} [givenQueryObj.prefix] - If the database uses a table name
+   * prefix, it can be set here. All table names in all parts of the query do
+   * not require the prefix if it's set here. Defaults to `server_` for
+   * [Cardinal](https://cardinalapps.xyz) purposes
+   *
+   * @param {string} [givenQueryObj.itemsPerPage] - Defaults to 100. Set to -1
+   * for no limit per page, which puts all results on page 1.
+   *
+   * @param {string} [givenQueryObj.columns] - An object of `column: value`
+   * pairs that must exactly match the  database contents. Values can be a
+   * string, number, or array. Or, an array of such objects. When performing a
+   * join, you can set the table name in the column name like `artists.id` to
+   * handle column name collisions. You may provide an "equalityOperator" key on
+   * a per-column-object basis so that queries of multiple compares can be
+   * combined (ie. get all artists except *these*)..
+   *
+   * @param {string} [givenQueryObj.columnCompare] - Operator used when querying
+   * for multiple columns. Either `AND` or `OR`. Defaults to `AND`.
+   *
+   * @param {string} [givenQueryObj.equalityOperator] - Operator used when
+   * checking the value of the column. Can be `=`, `LIKE`, `IN`, or `NOT IN`.
+   * Defaults to `=`. When using `LIKE`, you must put `%` signs around your
+   * string.
+   *
+   * @param {string} [givenQueryObj.orderBy] - Optionally order the results. Use
+   * an array of single entry objects of `column: order` key-value pairs. Orders
+   * are `ASC` and `DESC`. When omitted, the results are returned in the order
+   * that they exist in the database. This can also be set to the `rand` for
+   * random order.
+   *
+   * @param {string} [givenQueryObj.page] - Initial page to load. Defaults to
+   * page 1. Use `goToPage()` to switch pages afterwards.
+   *
+   * @param {string} [givenQueryObj.join] - An object that performs a table
+   * join, or an array of such objects.
+   *
+   * @param {string} givenQueryObj.join.table - Required. The table name to
+   * join, without prefix.
+   *
+   * @param {string} givenQueryObj.join.on - An object of
+   * `PrimaryTableColumn:ForeignTableColumn` keys and values that produce the ON
+   * statement.
+   *
+   * @param {string} [givenQueryObj.join.equalityOperator] - Equality operator
+   * when comparing primary to foreign values.
+   *
+   * @param {string} [givenQueryObj.join.type] - Either `LEFT JOIN`, `INNER
+   * JOIN`, or `CROSS JOIN`. Defaults to `LEFT JOIN`.
+   *
+   * @param {string} [givenQueryObj.mode] - For
+   * [Cardinal](https://cardinalapps.xyz) purposes. Either `http` or `ipc`.
+   * Defaults to `http`. See [README.me#Setting the
+   * Endpoint](#setting-the-endpoint).
    */
   constructor(givenQueryObj) {
     return (async () => {
@@ -44,6 +103,8 @@ export default class Query {
 
   /**
    * Constructs the SQL string from the information in this.queryObj.
+   * 
+   * @ignore
    */
   buildSql() {  
     let sql = ''
@@ -76,6 +137,7 @@ export default class Query {
    * Executes the internal SQL string against the database and updates the internal results array.
    * 
    * @returns {Query} Returns the Query instance.
+   * @ignore
    */
   async execute() {
     this.results = await this._send(this.sql)
@@ -104,6 +166,8 @@ export default class Query {
 
   /**
    * Performs modifications to the results after SQL execution.
+   * 
+   * @ignore
    */
   afterExecute() {
     // when joining tables that have column name collisions, sqlite will overwrite primary
@@ -126,6 +190,7 @@ export default class Query {
    * Builds the SELECT clause.
    * 
    * @returns {string}
+   * @ignore
    */
   _buildSelectClause() {
     let whenJoining = ''
@@ -143,6 +208,7 @@ export default class Query {
    * Builds the FROM clause.
    * 
    * @returns {string}
+   * @ignore
    */
   _buildFromClause() {
     return `\nFROM\n\t${this.queryObj.prefix}${this.queryObj.table}`
@@ -153,6 +219,7 @@ export default class Query {
    * number of JOIN's.
    * 
    * @returns {string}
+   * @ignore
    */
   _buildJoinClause() {
     if (!('join' in this.queryObj) || typeof this.queryObj.join !== 'object' || !Object.keys(this.queryObj.join).length) return ''
@@ -201,6 +268,7 @@ export default class Query {
    * Builds the WHERE clause.
    * 
    * @returns {string}
+   * @ignore
    */
   _buildWhereClause() {
     if (!('columns' in this.queryObj) || typeof this.queryObj.columns !== 'object' || !Object.keys(this.queryObj.columns).length) {
@@ -281,6 +349,7 @@ export default class Query {
    * 'blink-182' after 'Z'.
    *
    * @returns {string}
+   * @ignore
    */
   _buildOrderByClause() {
     if (!('orderBy' in this.queryObj)) {
@@ -312,6 +381,7 @@ export default class Query {
    * Builds the LIMIT clause.
    * 
    * @returns {string}
+   * @ignore
    */
   _buildLimitClause() {
     // omit the limit clause if showing all results 
@@ -325,7 +395,8 @@ export default class Query {
   /**
    * Builds the OFFSET clause.
    * 
-   * @returns {Number)}
+   * @returns {Number}
+   * @ignore
    */
   _buildOffsetClause() {
     // omit the offset clause if showing all results or the first page
@@ -340,6 +411,7 @@ export default class Query {
    * Calculates the offset number based on the internal queryObj.
    * 
    * @returns {number}
+   * @ignore
    */
   _calculateOffset() {
     return (this.queryObj.page * this.queryObj.itemsPerPage) - this.queryObj.itemsPerPage
