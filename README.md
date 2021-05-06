@@ -16,7 +16,7 @@ All `Query` instances have an asynchronous constructor, and must be `await`'ed.
 See the [constructor options](#constructor-options).
 
 ```javascript
-import Query from 'slurry.js'
+import Query from 'sqleary.js'
 
 async function getRows() {
   return await new Query({
