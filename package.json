@@ -1,12 +1,14 @@
 {
   "name": "sqleary.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "somebeaver",
   "private": true,
   "scripts": {
-    "docs": "jsdoc2md ./src/Query.js > DOCS.md"
+    "docs": "jsdoc2md ./src/Query.js > DOCS.md",
+    "ett-server": "node ./node_modules/es6-test-tools/index.js"
   },
   "devDependencies": {
+    "es6-test-tools": "github:somebeaver/es6-test-tools",
     "jsdoc-to-markdown": "^6.0.0"
   }
 }
