@@ -13,7 +13,7 @@ A reference of all public sqleary.js methods is available in
 
 ## Initializing a new Query
 All `Query` instances have an asynchronous constructor, and must be `await`'ed.
-See the [constructor options](#constructor-options).
+See the [docs](DOCS.md) for all possible constructor options.
 
 ```javascript
 import Query from 'sqleary.js'
@@ -179,6 +179,18 @@ class MyQuery extends Query {
 Your implementation should send the SQL to a destination for execution. All
 queries should be executed with the SQL driver's `all` (or equilivent) function.
 Empty results should net an empty array.
+
+## Testing
+
+Testing is done using
+[es6-test-tools](https://github.com/somebeaver/es6-test-tools). To start an
+Express server that delivers the test suite to any browser, run:
+
+```
+$ npm run ett-server
+```
+
+Then visit `localhost:3000` to run the suite.
 
 ## License
 

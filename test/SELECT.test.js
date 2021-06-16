@@ -1,32 +1,22 @@
-// what we're testing
-import Query from '../index.js'
-import { _testSend } from './plugs/_send.js'
+import { flattenWhitespace } from './filters/whitespace.js'
 
-/**
- * Extend the Query class as per:
- * https://github.com/somebeaver/sqleary.js#setting-the-endpoint
- */
-class testQuery extends Query {
-  _send(sql) {
-    return _testSend(sql)
-  }
-  calculateTotals(sql) {
-    return this
-  }
-}
+// what we're testing
+import { TestQuery } from './extend/TestQuery.js'
 
 /**
  * Runs tests for the SELECT SQL.
  */
 export async function selectTest() {
+  ett.output('<h3>SELECT.test.js</h3>')
+
   /**
    * Test 1
    */
   try {
-    let testResult1 = await new testQuery({
-      'table': 'some_table'
+    let basic = await new TestQuery({
+      'table': 'some_table',
+      'prefix': ''
     })
-
-    ett.isEqual('', '', 'SELECT test 1')
+    ett.isEqual(flattenWhitespace(basic.sql), 'SELECT * FROM some_table LIMIT 100', 'Can construct basic SELECT')
   } catch(e) { ett.fail(e) }
 }
